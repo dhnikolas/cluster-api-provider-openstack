@@ -45,6 +45,11 @@ func (s *Service) ReconcileRouter(openStackCluster *infrav1.OpenStackCluster, cl
 	}
 
 	routerName := getRouterName(clusterName)
+	existedRouter := false
+	if openStackCluster.Spec.RouterName != "" {
+		routerName = openStackCluster.Spec.RouterName
+		existedRouter = true
+	}
 	s.scope.Logger.Info("Reconciling router", "name", routerName)
 
 	routerList, err := s.client.ListRouter(routers.ListOpts{
@@ -52,6 +57,10 @@ func (s *Service) ReconcileRouter(openStackCluster *infrav1.OpenStackCluster, cl
 	})
 	if err != nil {
 		return err
+	}
+	
+	if existedRouter && len(routerList) == 0 {
+		return fmt.Errorf("router %s not found", routerName)
 	}
 
 	if len(routerList) > 1 {
@@ -190,7 +199,20 @@ func (s *Service) setRouterExternalIPs(openStackCluster *infrav1.OpenStackCluste
 }
 
 func (s *Service) DeleteRouter(openStackCluster *infrav1.OpenStackCluster, clusterName string) error {
-	router, subnet, err := s.getRouter(clusterName)
+	routerName := getRouterName(clusterName)
+	existedRouter := false
+	if openStackCluster.Spec.RouterName != "" {
+		routerName = openStackCluster.Spec.RouterName
+		existedRouter = true
+	}
+	
+	router, err := s.getRouterByName(routerName)
+	if err != nil {
+		return err
+	}
+	
+	subnetName := getSubnetName(clusterName)
+	subnet, err := s.getSubnetByName(subnetName)
 	if err != nil {
 		return err
 	}
@@ -212,6 +234,10 @@ func (s *Service) DeleteRouter(openStackCluster *infrav1.OpenStackCluster, clust
 			s.scope.Logger.V(4).Info("Removed RouterInterface of Router", "id", router.ID)
 		}
 	}
+	
+	if existedRouter {
+		return nil
+	}
 
 	err = s.client.DeleteRouter(router.ID)
 	if err != nil {
@@ -227,22 +253,6 @@ func (s *Service) getRouterInterfaces(routerID string) ([]ports.Port, error) {
 	return s.client.ListPort(ports.ListOpts{
 		DeviceID: routerID,
 	})
-}
-
-func (s *Service) getRouter(clusterName string) (routers.Router, subnets.Subnet, error) {
-	routerName := getRouterName(clusterName)
-	router, err := s.getRouterByName(routerName)
-	if err != nil {
-		return routers.Router{}, subnets.Subnet{}, err
-	}
-
-	subnetName := getSubnetName(clusterName)
-	subnet, err := s.getSubnetByName(subnetName)
-	if err != nil {
-		return router, subnets.Subnet{}, err
-	}
-
-	return router, subnet, nil
 }
 
 func (s *Service) getRouterByName(routerName string) (routers.Router, error) {
