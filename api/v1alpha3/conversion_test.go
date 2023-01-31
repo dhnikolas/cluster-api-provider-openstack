@@ -230,6 +230,7 @@ func TestFuzzyConversion(t *testing.T) {
 				v1alpha6Cluster.Spec.APIServerFixedIP = ""
 				v1alpha6Cluster.Spec.AllowAllInClusterTraffic = false
 				v1alpha6Cluster.Spec.DisableAPIServerFloatingIP = false
+				v1alpha6Cluster.Spec.RouterName = ""
 				v1alpha6Cluster.Spec.APIServerLoadBalancer.AllowedCIDRs = nil
 				if v1alpha6Cluster.Spec.Bastion != nil {
 					v1alpha6Cluster.Spec.Bastion.Instance.ImageUUID = ""
