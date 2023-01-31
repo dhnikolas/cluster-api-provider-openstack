@@ -2117,6 +2117,10 @@ spec:
                           and a router connected to this subnet. If you leave this
                           empty, no network will be created.
                         type: string
+                      routerName:
+                        description: RouterName is the name of an existing router.
+                          If specified, no router will not be created.
+                        type: string
                       subnet:
                         description: If NodeCIDR cannot be set this can be used to
                           detect an existing subnet.

@@ -737,6 +737,7 @@ func autoConvert_v1alpha6_OpenStackClusterSpec_To_v1alpha3_OpenStackClusterSpec(
 		return err
 	}
 	out.DNSNameservers = *(*[]string)(unsafe.Pointer(&in.DNSNameservers))
+	// WARNING: in.RouterName requires manual conversion: does not exist in peer-type
 	if in.ExternalRouterIPs != nil {
 		in, out := &in.ExternalRouterIPs, &out.ExternalRouterIPs
 		*out = make([]ExternalRouterIPParam, len(*in))
