@@ -51,7 +51,7 @@ type OpenStackClusterSpec struct {
 	// +listType=set
 	DNSNameservers []string `json:"dnsNameservers,omitempty"`
 	// RouterName is the name of an existing router.
-	// If specified, no router will not be created.
+	// If specified, the router is used and no new router will be created.
 	RouterName string `json:"routerName,omitempty"`
 	// ExternalRouterIPs is an array of externalIPs on the respective subnets.
 	// This is necessary if the router needs a fixed ip in a specific subnet.
