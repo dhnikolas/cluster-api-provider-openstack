@@ -2150,6 +2150,44 @@ spec:
                           and a router connected to this subnet. If you leave this
                           empty, no network will be created.
                         type: string
+                      router:
+                        description: If NodeCIDR is set this can be used to detect
+                          an existing router. If specified, no new router will be
+                          created.
+                        properties:
+                          admin_state_up:
+                            type: boolean
+                          description:
+                            type: string
+                          distributed:
+                            type: boolean
+                          id:
+                            type: string
+                          limit:
+                            type: integer
+                          marker:
+                            type: string
+                          name:
+                            type: string
+                          notTags:
+                            type: string
+                          notTagsAny:
+                            type: string
+                          projectId:
+                            type: string
+                          sortDir:
+                            type: string
+                          sortKey:
+                            type: string
+                          status:
+                            type: string
+                          tags:
+                            type: string
+                          tagsAny:
+                            type: string
+                          tenantId:
+                            type: string
+                        type: object
                       subnet:
                         description: If NodeCIDR cannot be set this can be used to
                           detect an existing subnet.
@@ -2911,6 +2949,44 @@ spec:
                           and a router connected to this subnet. If you leave this
                           empty, no network will be created.
                         type: string
+                      router:
+                        description: If NodeCIDR is set this can be used to detect
+                          an existing router. If specified, no new router will be
+                          created.
+                        properties:
+                          admin_state_up:
+                            type: boolean
+                          description:
+                            type: string
+                          distributed:
+                            type: boolean
+                          id:
+                            type: string
+                          limit:
+                            type: integer
+                          marker:
+                            type: string
+                          name:
+                            type: string
+                          notTags:
+                            type: string
+                          notTagsAny:
+                            type: string
+                          projectId:
+                            type: string
+                          sortDir:
+                            type: string
+                          sortKey:
+                            type: string
+                          status:
+                            type: string
+                          tags:
+                            type: string
+                          tagsAny:
+                            type: string
+                          tenantId:
+                            type: string
+                        type: object
                       subnet:
                         description: If NodeCIDR cannot be set this can be used to
                           detect an existing subnet.

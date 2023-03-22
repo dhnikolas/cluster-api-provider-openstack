@@ -17,6 +17,7 @@
 - [Optional Configuration](#optional-configuration)
   - [Log level](#log-level)
   - [External network](#external-network)
+  - [Use existing router](#use-existing-router)
   - [API server floating IP](#api-server-floating-ip)
     - [Disabling the API server floating IP](#disabling-the-api-server-floating-ip)
     - [Restrict Access to the API server](#restrict-access-to-the-api-server)
@@ -175,6 +176,21 @@ openstack network list --external
 ```
 
 Note: If your openstack cluster does not already have a public network, you should contact your cloud service provider. We will not review how to troubleshoot this here.
+
+## Use existing router
+
+You can use pre-existing router instead of creating a new one. When deleting a cluster, such a router will not be deleted.
+
+ ```yaml
+ apiVersion: infrastructure.cluster.x-k8s.io/v1alpha6
+ kind: OpenStackCluster
+ metadata:
+   name: <cluster-name>
+   namespace: <cluster-namespace>
+ spec:
+   ...
+   routerName: <Router name>
+ ```
 
 ## API server floating IP
 
