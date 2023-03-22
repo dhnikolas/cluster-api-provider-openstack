@@ -897,6 +897,7 @@ func autoConvert_v1alpha7_OpenStackClusterSpec_To_v1alpha5_OpenStackClusterSpec(
 		return err
 	}
 	out.DNSNameservers = *(*[]string)(unsafe.Pointer(&in.DNSNameservers))
+	// WARNING: in.RouterName requires manual conversion: does not exist in peer-type
 	out.ExternalRouterIPs = *(*[]ExternalRouterIPParam)(unsafe.Pointer(&in.ExternalRouterIPs))
 	out.ExternalNetworkID = in.ExternalNetworkID
 	if err := Convert_v1alpha7_APIServerLoadBalancer_To_v1alpha5_APIServerLoadBalancer(&in.APIServerLoadBalancer, &out.APIServerLoadBalancer, s); err != nil {

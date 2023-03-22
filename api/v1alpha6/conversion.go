@@ -235,3 +235,7 @@ func (r *OpenStackMachineTemplateList) ConvertFrom(srcRaw ctrlconversion.Hub) er
 func Convert_v1alpha6_OpenStackMachineSpec_To_v1alpha7_OpenStackMachineSpec(in *OpenStackMachineSpec, out *infrav1.OpenStackMachineSpec, s conversion.Scope) error {
 	return autoConvert_v1alpha6_OpenStackMachineSpec_To_v1alpha7_OpenStackMachineSpec(in, out, s)
 }
+
+func Convert_v1alpha7_OpenStackClusterSpec_To_v1alpha6_OpenStackClusterSpec(in *infrav1.OpenStackClusterSpec, out *OpenStackClusterSpec, s conversion.Scope) error {
+	return autoConvert_v1alpha7_OpenStackClusterSpec_To_v1alpha6_OpenStackClusterSpec(in, out, s)
+}

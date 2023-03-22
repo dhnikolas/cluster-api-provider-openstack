@@ -337,6 +337,7 @@ func TestFuzzyConversion(t *testing.T) {
 				v1alpha7Cluster.Spec.APIServerLoadBalancer.AllowedCIDRs = nil
 
 				v1alpha7Cluster.Spec.ControlPlaneOmitAvailabilityZone = false
+				v1alpha7Cluster.Spec.RouterName = ""
 
 				if v1alpha7Cluster.Spec.Bastion != nil {
 					v1alpha7Cluster.Spec.Bastion.Instance.Image = ""
@@ -415,6 +416,8 @@ func TestFuzzyConversion(t *testing.T) {
 				v1alpha7ClusterTemplate.Spec.Template.Spec.APIServerLoadBalancer.AllowedCIDRs = nil
 
 				v1alpha7ClusterTemplate.Spec.Template.Spec.ControlPlaneOmitAvailabilityZone = false
+				
+				v1alpha7ClusterTemplate.Spec.Template.Spec.RouterName = ""
 
 				if v1alpha7ClusterTemplate.Spec.Template.Spec.Bastion != nil {
 					v1alpha7ClusterTemplate.Spec.Template.Spec.Bastion.Instance.Image = ""
