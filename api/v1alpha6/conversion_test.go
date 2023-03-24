@@ -44,11 +44,13 @@ func TestFuzzyConversion(t *testing.T) {
 				c.FuzzNoCustom(v1alpha7Cluster)
 
 				v1alpha7Cluster.Spec.APIServerLoadBalancer.Provider = ""
+				v1alpha7Cluster.Spec.Router = nil
 			},
 			func(v1alpha7ClusterTemplate *infrav1.OpenStackClusterTemplate, c fuzz.Continue) {
 				c.FuzzNoCustom(v1alpha7ClusterTemplate)
 
 				v1alpha7ClusterTemplate.Spec.Template.Spec.APIServerLoadBalancer.Provider = ""
+				v1alpha7ClusterTemplate.Spec.Template.Spec.Router = nil
 			},
 		}
 	}
