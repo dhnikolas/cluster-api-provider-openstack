@@ -45,17 +45,26 @@ func (s *Service) ReconcileRouter(openStackCluster *infrav1.OpenStackCluster, cl
 	}
 
 	routerName := getRouterName(clusterName)
-	s.scope.Logger().Info("Reconciling router", "name", routerName)
+	routerListOpts := routers.ListOpts{Name: routerName}
+	existingRouter := false
+	if openStackCluster.Spec.Router != nil {
+		routerListOpts = openStackCluster.Spec.Router.ToListOpt()
+		existingRouter = true
+	} else {
+		s.scope.Logger().Info("Reconciling router", "name", routerName)
+	}
 
-	routerList, err := s.client.ListRouter(routers.ListOpts{
-		Name: routerName,
-	})
+	routerList, err := s.client.ListRouter(routerListOpts)
 	if err != nil {
 		return err
 	}
 
+	if existingRouter && len(routerList) == 0 {
+		return fmt.Errorf("router not found by routerFilter ")
+	}
+
 	if len(routerList) > 1 {
-		return fmt.Errorf("found %d router with the name %s, which should not happen", len(routerList), routerName)
+		return fmt.Errorf("found %d routers, which should not happen", len(routerList))
 	}
 
 	var router *routers.Router
@@ -67,7 +76,7 @@ func (s *Service) ReconcileRouter(openStackCluster *infrav1.OpenStackCluster, cl
 		}
 	} else {
 		router = &routerList[0]
-		s.scope.Logger().V(6).Info(fmt.Sprintf("Reuse existing Router %s with id %s", routerName, router.ID))
+		s.scope.Logger().V(6).Info(fmt.Sprintf("Reuse existing Router %s with id %s", router.Name, router.ID))
 	}
 
 	routerIPs := []string{}
@@ -190,7 +199,21 @@ func (s *Service) setRouterExternalIPs(openStackCluster *infrav1.OpenStackCluste
 }
 
 func (s *Service) DeleteRouter(openStackCluster *infrav1.OpenStackCluster, clusterName string) error {
-	router, subnet, err := s.getRouter(clusterName)
+	routerName := getRouterName(clusterName)
+	listOpts := routers.ListOpts{Name: routerName}
+	existingRouter := false
+	if openStackCluster.Spec.Router != nil {
+		listOpts = openStackCluster.Spec.Router.ToListOpt()
+		existingRouter = true
+	}
+
+	router, err := s.getRouterByFilter(listOpts)
+	if err != nil {
+		return err
+	}
+
+	subnetName := getSubnetName(clusterName)
+	subnet, err := s.getSubnetByName(subnetName)
 	if err != nil {
 		return err
 	}
@@ -213,6 +236,11 @@ func (s *Service) DeleteRouter(openStackCluster *infrav1.OpenStackCluster, clust
 		}
 	}
 
+	if existingRouter {
+		s.scope.Logger().V(4).Info("No need to delete pre-existing router", "name", router.Name)
+		return nil
+	}
+
 	err = s.client.DeleteRouter(router.ID)
 	if err != nil {
 		record.Warnf(openStackCluster, "FailedDeleteRouter", "Failed to delete router %s with id %s: %v", router.Name, router.ID, err)
@@ -229,26 +257,8 @@ func (s *Service) getRouterInterfaces(routerID string) ([]ports.Port, error) {
 	})
 }
 
-func (s *Service) getRouter(clusterName string) (routers.Router, subnets.Subnet, error) {
-	routerName := getRouterName(clusterName)
-	router, err := s.getRouterByName(routerName)
-	if err != nil {
-		return routers.Router{}, subnets.Subnet{}, err
-	}
-
-	subnetName := getSubnetName(clusterName)
-	subnet, err := s.getSubnetByName(subnetName)
-	if err != nil {
-		return router, subnets.Subnet{}, err
-	}
-
-	return router, subnet, nil
-}
-
-func (s *Service) getRouterByName(routerName string) (routers.Router, error) {
-	routerList, err := s.client.ListRouter(routers.ListOpts{
-		Name: routerName,
-	})
+func (s *Service) getRouterByFilter(opts routers.ListOpts) (routers.Router, error) {
+	routerList, err := s.client.ListRouter(opts)
 	if err != nil {
 		return routers.Router{}, err
 	}
@@ -259,7 +269,7 @@ func (s *Service) getRouterByName(routerName string) (routers.Router, error) {
 	case 1:
 		return routerList[0], nil
 	}
-	return routers.Router{}, fmt.Errorf("found %d router with the name %s, which should not happen", len(routerList), routerName)
+	return routers.Router{}, fmt.Errorf("found %d routers, which should not happen", len(routerList))
 }
 
 func (s *Service) getSubnetByName(subnetName string) (subnets.Subnet, error) {
